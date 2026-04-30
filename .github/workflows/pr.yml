@@ -10,13 +10,14 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: 🔄 Sync node version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
           cache: "yarn"
+          cache-dependency-path: yarn.lock
 
       - name: ⏬ Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -44,7 +45,7 @@ jobs:
       
       - name: ⏫ Upload Build Artifact
         if: matrix.platform == 'windows-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: SoundcoreManager-${{ matrix.platform }}.exe
           path: src-tauri\target\release\deps\SoundcoreManager-${{ matrix.platform }}-${{ env.SHORT_SHA }}.exe
