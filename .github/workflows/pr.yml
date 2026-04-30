@@ -18,6 +18,9 @@ jobs:
           node-version: "lts/*"
           cache: "yarn"
           cache-dependency-path: yarn.lock
+      
+      - name: ⏬ Enable corepack and install
+        run: corepack enable && corepack install
 
       - name: ⏬ Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -33,6 +36,11 @@ jobs:
 
       - name: 📥 Install Yarn Dependencies
         run: yarn install
+
+      - name: ⏬ Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: 'latest'
 
       - name: 🔨 Build
         uses: tauri-apps/tauri-action@v0
