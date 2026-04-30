@@ -18,7 +18,7 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ⏬ Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -28,17 +28,15 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: ⏬ Setup node version
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
 
       - name: ⏬ Enable corepack and install
         run: corepack enable && corepack install
 
-      - name: 🔄 Setup yarn in node
-        uses: actions/setup-node@v4
-        with:
-          cache: 'yarn'
       - name: 📥 Install Node Dependencies
         run: yarn --frozen-lockfile
 
@@ -51,7 +49,7 @@ jobs:
         run: yarn build
 
       - name: 🔨 Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: ⏫ Upload artifact
         uses: actions/upload-pages-artifact@v3

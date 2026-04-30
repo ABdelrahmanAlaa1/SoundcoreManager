@@ -15,7 +15,7 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: ⚡ Set short SHA ENV
         run: echo "SHORT_SHA=$("${{ github.sha }}".SubString(0, 8))" >> $env:GITHUB_ENV
@@ -29,17 +29,14 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: ⏬ Setup node version
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
 
       - name: ⏬ Enable corepack and install
         run: corepack enable && corepack install
-
-      - name: 🔄 Setup yarn in node
-        uses: actions/setup-node@v4
-        with:
-          cache: 'yarn'
 
       - name: ⏬ Install Ubuntu dependencies
         if: matrix.platform == 'ubuntu-20.04'
@@ -67,7 +64,7 @@ jobs:
 
       - name: ⏫ Upload Build Artifact
         if: matrix.platform == 'windows-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: SoundcoreManager-${{ matrix.platform }}.exe
           path: target\release\SoundcoreManager-${{ matrix.platform }}-${{ env.SHORT_SHA }}.exe

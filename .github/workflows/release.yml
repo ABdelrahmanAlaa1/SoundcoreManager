@@ -15,7 +15,7 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: ⚡ Set short SHA ENV
         run: echo "SHORT_SHA=$("${{ github.sha }}".SubString(0, 8))" >> $env:GITHUB_ENV
@@ -26,24 +26,17 @@ jobs:
           toolchain: stable
 
       - name: ⚡ Set up cargo cache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            src-tauri/target/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo
+        uses: Swatinem/rust-cache@v2
 
       - name: 🔄 Sync node version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
           cache: "yarn"
+          cache-dependency-path: yarn.lock
+      
+      - name: ⏬ Enable corepack and install
+        run: corepack enable && corepack install
 
       - name: ⏬ Install Ubuntu dependencies
         if: matrix.platform == 'ubuntu-20.04'
@@ -53,6 +46,11 @@ jobs:
 
       - name: 📥 Install Node Dependencies
         run: yarn install --frozen-lockfile 
+      
+      - name: ⏬ Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: 'latest'
 
       - name: 🔨 Build
         uses: tauri-apps/tauri-action@v0
@@ -83,7 +81,7 @@ jobs:
 
       - name: ⏫ Upload Build Artifact
         if: matrix.platform == 'windows-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: SoundcoreManager-${{ matrix.platform }}.exe
           path: target\release\deps\SoundcoreManager-${{ matrix.platform }}-${{ env.SHORT_SHA }}.exe
